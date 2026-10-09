@@ -1,0 +1,51 @@
+# OS files
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+*.db
+*.sqlite
+*.sqlite3
+uploads/
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+*.log
+
+# Build artifacts
+build/
+dist/
+coverage/
+.cache/
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# Local project caches
+.pytest_cache/
+.pyc
+
+# Optional: keep local test data out of Git
+backend/uploads/
+frontend/.vite/

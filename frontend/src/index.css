@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-paper font-sans text-ink antialiased; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight text-forest; }
+  :focus-visible { @apply outline-none ring-2 ring-moss ring-offset-2 ring-offset-paper; }
+  ::selection { background: #D3E2CE; }
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-base text-ink placeholder:text-muted/70 focus:border-moss;
+  }
+  .input-error { @apply border-clay; }
+  .label { @apply mb-1.5 block text-sm font-medium text-ink; }
+  .scan-corner { @apply absolute h-6 w-6 border-moss; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton { background: linear-gradient(90deg, #E9EEE6 25%, #F4F7F2 50%, #E9EEE6 75%); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; }
+@keyframes scanline { 0%,100% { top: 8%; } 50% { top: 88%; } }
+.scanline { animation: scanline 3.2s ease-in-out infinite; }
