@@ -19,8 +19,8 @@ export default function Navbar() {
           {LINKS.map((l) => <li key={l.href}><a href={l.href} className="text-sm text-muted hover:text-forest">{l.label}</a></li>)}
         </ul>
         <div className="hidden items-center gap-3 md:flex">
-          <Button to="/dashboard" variant="ghost">Open demo</Button>
-          <Button to="/scan">Identify waste</Button>
+          <Button to="/citizen" variant="ghost">Open demo</Button>
+          <Button to="/citizen/scan">Identify waste</Button>
         </div>
         <button className="rounded-lg p-2 md:hidden" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'}>
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -31,7 +31,7 @@ export default function Navbar() {
           <ul className="py-2">
             {LINKS.map((l) => <li key={l.href}><a href={l.href} onClick={() => setOpen(false)} className="block py-2.5 text-muted">{l.label}</a></li>)}
           </ul>
-          <div className="flex gap-3"><Button to="/scan" className="flex-1">Identify waste</Button><Button to="/dashboard" variant="outline" className="flex-1">Open demo</Button></div>
+          <div className="flex gap-3"><Button to="/citizen/scan" className="flex-1">Identify waste</Button><Button to="/citizen" variant="outline" className="flex-1">Open demo</Button></div>
         </div>
       )}
     </header>

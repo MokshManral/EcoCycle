@@ -46,7 +46,7 @@ export default function LandingPage() {
           <h1 className="text-4xl font-semibold leading-[1.08] sm:text-5xl lg:text-6xl">Turn Waste Into a Better Future.</h1>
           <p className="mt-5 max-w-xl text-lg text-muted">Identify waste, discover responsible disposal options, and make every verified collection count.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button to="/scan" size="lg" icon={ScanLine}>Identify waste</Button>
+            <Button to="/citizen/scan" size="lg" icon={ScanLine}>Identify waste</Button>
             <Button to="/collector" size="lg" variant="outline">See the collector view</Button>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl rounded-2xl bg-forest px-6 py-12 text-center sm:px-12">
           <h2 className="text-3xl font-semibold text-white">Start with one item.</h2>
           <p className="mx-auto mt-3 max-w-lg text-sage/85">Upload a photo and see what EcoCycle suggests. Nothing counts toward points until a collection is verified.</p>
-          <div className="mt-6 flex justify-center"><Button to="/scan" size="lg" variant="secondary" icon={ScanLine}>Identify waste</Button></div>
+          <div className="mt-6 flex justify-center"><Button to="/citizen/scan" size="lg" variant="secondary" icon={ScanLine}>Identify waste</Button></div>
         </div>
       </section>
     </>

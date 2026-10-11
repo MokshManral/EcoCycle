@@ -12,15 +12,15 @@ export default function Footer() {
         <nav aria-label="Product">
           <h2 className="mb-3 font-sans text-sm font-semibold text-white">Product</h2>
           <ul className="space-y-2 text-sm text-sage/80">
-            <li><Link to="/scan" className="hover:text-white">Identify waste</Link></li>
-            <li><Link to="/pickups" className="hover:text-white">Track pickups</Link></li>
-            <li><Link to="/impact" className="hover:text-white">EcoPoints &amp; impact</Link></li>
+            <li><Link to="/citizen/scan" className="hover:text-white">Identify waste</Link></li>
+            <li><Link to="/citizen/pickups" className="hover:text-white">Track pickups</Link></li>
+            <li><Link to="/citizen/impact" className="hover:text-white">EcoPoints &amp; impact</Link></li>
           </ul>
         </nav>
         <nav aria-label="Demo views">
           <h2 className="mb-3 font-sans text-sm font-semibold text-white">Demo views</h2>
           <ul className="space-y-2 text-sm text-sage/80">
-            <li><Link to="/dashboard" className="hover:text-white">Citizen</Link></li>
+            <li><Link to="/citizen" className="hover:text-white">Citizen</Link></li>
             <li><Link to="/collector" className="hover:text-white">Collector</Link></li>
             <li><Link to="/admin" className="hover:text-white">Admin</Link></li>
           </ul>
