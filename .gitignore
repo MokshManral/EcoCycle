@@ -48,4 +48,3 @@ coverage/
 
 # Optional: keep local test data out of Git
 backend/uploads/
-frontend/.vite/
