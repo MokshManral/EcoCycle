@@ -7,6 +7,11 @@ from __future__ import annotations
 
 import io
 
+from PIL import Image
+
+from app.core.config import get_settings
+from app.services.classifier import classify_waste
+
 
 def _make_image_file(filename: str = "bottle.jpg", size: int = 1024) -> bytes:
     """Create minimal JPEG-like bytes for testing."""
@@ -102,3 +107,21 @@ def test_analyze_rejects_oversized_file(client):
 def test_analyze_requires_file_field(client):
     response = client.post("/api/waste/analyze")
     assert response.status_code == 422  # FastAPI validation error
+
+
+def test_local_classifier_identifies_silver_container_from_pixels():
+    settings = get_settings()
+    original = settings.MOCK_CLASSIFIER
+    settings.MOCK_CLASSIFIER = False
+
+    try:
+        image = Image.new("RGB", (64, 64), (195, 195, 200))
+        image = image.resize((128, 128))
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+
+        result = classify_waste(buffer.getvalue(), "mystery.png")
+        assert result.category == "metal"
+        assert result.confidence is not None and result.confidence >= 0.5
+    finally:
+        settings.MOCK_CLASSIFIER = original

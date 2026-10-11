@@ -14,7 +14,7 @@ export default function AnalysisPage() {
     return (
       <>
         <PageHeader title="Analysis result" />
-        <EmptyState icon={ScanLine} title="No analysis yet" description="Upload a photo of an item to see what it is and how to dispose of it." action={{ label: 'Identify waste', to: '/scan', icon: ScanLine }} />
+        <EmptyState icon={ScanLine} title="No analysis yet" description="Upload a photo of an item to see what it is and how to dispose of it." action={{ label: 'Identify waste', to: '/citizen/scan', icon: ScanLine }} />
       </>
     );
   }
@@ -24,12 +24,12 @@ export default function AnalysisPage() {
   return (
     <>
       <PageHeader title="Analysis result" description="Review the suggestion before requesting a pickup."
-        actions={<Button variant="outline" icon={ScanLine} onClick={() => { clearAnalysis(); navigate('/scan'); }}>Analyze another item</Button>} />
+        actions={<Button variant="outline" icon={ScanLine} onClick={() => { clearAnalysis(); navigate('/citizen/scan'); }}>Analyze another item</Button>} />
       <AnalysisResultCard result={result} imageUrl={imageUrl} />
       <div className="mt-8 flex flex-wrap gap-3">
         {identified
-          ? <Button size="lg" icon={Truck} to="/pickup/new">Request pickup</Button>
-          : <Button size="lg" icon={ScanLine} onClick={() => { clearAnalysis(); navigate('/scan'); }}>Try another photo</Button>}
+          ? <Button size="lg" icon={Truck} to="/citizen/pickup/new">Request pickup</Button>
+          : <Button size="lg" icon={ScanLine} onClick={() => { clearAnalysis(); navigate('/citizen/scan'); }}>Try another photo</Button>}
       </div>
     </>
   );

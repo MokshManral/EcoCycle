@@ -1,19 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import { ToastProvider } from './context/ToastContext';
-import { AnalysisProvider } from './context/AnalysisContext';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+import App from "./App";
+import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
+import { AnalysisProvider } from "./context/AnalysisContext";
+
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ToastProvider>
-        <AnalysisProvider>
-          <App />
-        </AnalysisProvider>
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <AnalysisProvider>
+            <App />
+          </AnalysisProvider>
+        </ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

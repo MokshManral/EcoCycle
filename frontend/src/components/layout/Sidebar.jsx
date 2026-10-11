@@ -1,19 +1,20 @@
 import { NavLink, Link } from 'react-router-dom';
-import { LayoutDashboard, ScanLine, Truck, BarChart3, ClipboardList, ShieldCheck, Inbox } from 'lucide-react';
+import { LayoutDashboard, ScanLine, Truck, BarChart3, ClipboardList, Inbox } from 'lucide-react';
 import Logo from './Logo';
+import LogoutButton from '../LogoutButton';
 
 const NAV = {
   citizen: [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
-    { to: '/scan', label: 'Identify waste', icon: ScanLine },
-    { to: '/pickups', label: 'My pickups', icon: Truck },
-    { to: '/impact', label: 'EcoPoints & impact', icon: BarChart3 },
+    { to: '/citizen', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/citizen/scan', label: 'Identify waste', icon: ScanLine },
+    { to: '/citizen/pickups', label: 'My pickups', icon: Truck },
+    { to: '/citizen/impact', label: 'EcoPoints & impact', icon: BarChart3 },
   ],
   collector: [{ to: '/collector', label: 'Pickup queue', icon: Inbox, end: true }],
   admin: [{ to: '/admin', label: 'Overview', icon: ClipboardList, end: true }],
 };
 const ROLES = [
-  { key: 'citizen', label: 'Citizen', to: '/dashboard' },
+  { key: 'citizen', label: 'Citizen', to: '/citizen' },
   { key: 'collector', label: 'Collector', to: '/collector' },
   { key: 'admin', label: 'Admin', to: '/admin' },
 ];
@@ -22,6 +23,7 @@ export default function Sidebar({ role, onNavigate }) {
   return (
     <div className="flex h-full flex-col gap-6 p-4">
       <div className="px-2 pt-1"><Logo to="/" /></div>
+
       <nav aria-label="Primary" className="flex-1">
         <ul className="space-y-1">
           {NAV[role].map(({ to, label, icon: Icon, end }) => (
@@ -34,16 +36,9 @@ export default function Sidebar({ role, onNavigate }) {
           ))}
         </ul>
       </nav>
-      <div className="rounded-lg bg-sage-50 p-3">
-        <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted"><ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />Demo view (no sign-in)</p>
-        <div className="flex gap-1" role="group" aria-label="Switch demo role">
-          {ROLES.map((r) => (
-            <Link key={r.key} to={r.to} onClick={onNavigate} aria-current={r.key === role ? 'true' : undefined}
-              className={`flex-1 rounded-md px-2 py-1.5 text-center text-xs font-medium ${r.key === role ? 'bg-white text-forest shadow-card' : 'text-muted hover:text-forest'}`}>
-              {r.label}
-            </Link>
-          ))}
-        </div>
+
+      <div className="space-y-3 border-t border-line pt-4">
+        <LogoutButton />
       </div>
     </div>
   );
