@@ -33,12 +33,6 @@ logger = logging.getLogger(__name__)
 
 # ── Demo seed data ─────────────────────────────────────────────────────────────
 
-app = FastAPI()
-
-@app.get("/")
-def home():
-    return {"message": "API is running"}
-
 def _seed_demo_users() -> None:
     """
     Ensure demo citizen and collector users exist in the database.
@@ -110,13 +104,10 @@ app = FastAPI(
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
 # Allow the frontend dev server and preview server to call the API.
-# In production, set FRONTEND_ORIGINS to the deployed frontend URL only.
+# In production, set FRONTEND_ORIGINS to the deployed frontend URL(s) only.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://main.d1cxpw7q8iu6oo.amplifyapp.com",
-    ],
+    allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

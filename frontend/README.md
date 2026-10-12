@@ -1,74 +1,97 @@
-# EcoCycle frontend
+# EcoCycle Frontend
 
-React + Vite + Tailwind + React Router. Runs fully on mock data or against the FastAPI backend.
+React + Vite + Tailwind CSS app for the EcoCycle waste segregation workflow. It runs either in demo mode or against the live FastAPI backend.
 
-## Run
+## Local development
+
+Start the backend first, then run the frontend in a second terminal:
 
 ```bash
-npm install
-cp .env.example .env     # then edit values
-npm run dev              # http://localhost:5173
-npm run build            # production build in dist/
+# Backend
+cd backend
+python -m venv .venv
+source .venv/bin/activate          # macOS / Linux
+# .venv\Scripts\activate           # Windows
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+```bash
+# Frontend
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Open the app at http://localhost:5173 and the API docs at http://localhost:8000/docs.
 
 ## Environment variables
 
+Copy `frontend/.env.example` to `.env` and adjust as needed.
+
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `VITE_API_URL` | `http://localhost:8000` | Backend base URL |
-| `VITE_USE_MOCK_DATA` | `true` | `true` = use `src/mock/` and ignore the backend. `false` = call the real API |
+| `VITE_API_URL` | `http://localhost:8000` | Base URL of the FastAPI backend |
+| `VITE_USE_MOCK_DATA` | `true` | `true` uses the mock data layer; `false` calls the live backend |
+| `VITE_FIREBASE_API_KEY` | empty | Firebase client config for real auth |
+| `VITE_FIREBASE_AUTH_DOMAIN` | empty | Firebase auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | empty | Firebase project id |
+| `VITE_FIREBASE_STORAGE_BUCKET` | empty | Firebase storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | empty | Firebase messaging sender id |
+| `VITE_FIREBASE_APP_ID` | empty | Firebase app id |
 
-All `VITE_` variables are public in the browser bundle. Never put secrets in them.
-While mock mode is on, every app screen shows a "Demo mode" banner.
+All `VITE_` variables are public in the browser bundle. Never store secrets in them.
+
+## Demo accounts and roles
+
+The app ships with demo users for all three portal roles:
+
+- Citizen: `citizen@ecocycle.demo` / `citizen123`
+- Collector: `collector@ecocycle.demo` / `collector123`
+- Admin: `admin@ecocycle.demo` / `admin123`
+
+These demo accounts work without a real backend auth service. If Firebase is configured, the app can also sign in with real Firebase users, but the demo accounts remain the fastest way to test the role-based flows.
 
 ## Routes
 
-| Route | Page | View |
-| --- | --- | --- |
-| `/` | Landing | public |
-| `/dashboard`, `/scan`, `/analysis`, `/pickup/new`, `/pickups`, `/pickups/:pickupId`, `/impact` | Citizen flow | citizen |
-| `/collector`, `/collector/pickups/:pickupId` | Collector queue and details | collector |
-| `/admin` | Read-only overview | admin |
+| Route | Purpose |
+| --- | --- |
+| `/` | Landing page |
+| `/dashboard`, `/scan`, `/analysis`, `/pickup/new`, `/pickups`, `/pickups/:pickupId`, `/impact` | Citizen flow |
+| `/collector`, `/collector/pickups/:pickupId` | Collector workflow |
+| `/admin` | Admin overview |
 
-There is no authentication. The sidebar "Demo view" switcher moves between roles.
+The UI uses a demo role switcher to move between the citizen, collector, and admin experiences.
 
-## Architecture
+## Mock vs real backend
 
-- `src/services/api.js` is the only place that calls `fetch`. Image upload uses `FormData` and never sets `Content-Type`.
-- `wasteService`, `pickupService` and `impactService` choose mock or real implementations. Pages are identical in both modes.
-- `src/mock/pickups.js` is an in-memory fake backend (resets on refresh). OTP checking, accepted-only verification, and duplicate-verification rejection happen there, mirroring what the real backend must do.
-- The frontend never marks a pickup collected or awards points itself. It only displays what the backend returns (`points_awarded`, `status`).
+- `src/services/api.js` is the single fetch entry point.
+- `wasteService`, `pickupService`, and `impactService` switch between mock and live implementations based on `VITE_USE_MOCK_DATA`.
+- The mock layer is intentionally aligned with the backend contract so both flows can be tested with the same UI.
+- The frontend never decides whether a pickup is collected or points are awarded; it only renders backend-returned status and award values.
 
-## Try the demo flow
+## Demo flow
 
-1. `/scan`: upload any image. Filename hints steer the mock result (`bottle`, `battery`, `can`, `box`, `glass`; `unknown` gives the "can't identify" state; `box` gives a low-confidence warning).
-2. `/analysis` → Request pickup → submit.
-3. `/collector` → Accept the new request.
-4. Open the pickup as a citizen (`/pickups/:id`) to see the handover code. Seeded accepted pickup `PK-1003` uses code `482913`.
-5. As collector, enter the code. A wrong code is rejected; a repeat verification is rejected without extra points.
-6. `/dashboard` and `/impact` update from the refreshed data.
+1. Open `/scan` and upload an image.
+2. View the result on `/analysis` and submit a pickup request.
+3. Login as the collector and accept the new pickup.
+4. Open the pickup as a citizen to see the handover code.
+5. Enter the code as the collector to complete the verified handoff.
+6. Check `/dashboard` and `/impact` for updated counts and points.
 
-## Assumed API schemas (confirm with the backend owner)
+## Assumed API contract
 
-The brief fixes endpoint paths but not payloads. These are the assumptions used in code and mocks. Change them in one place (`services/` and `mock/`) if the backend differs.
+The frontend is built to the same contract exposed by the backend API. Keep both in sync when changing payloads.
 
-- `POST /api/waste/analyze`: multipart field **`file`** → `{ item_name, category, confidence, hazard_warning, disposal_method, recycler: {name, address} | null, estimated_points }`. All fields null when unidentified.
-- `POST /api/pickup/request` JSON: `{ waste_item, category, quantity, address, preferred_date, instructions }` → pickup.
-- Pickup: `{ pickup_id, waste_item, category, quantity, address, preferred_date, instructions, status, created_at, collector: {id, name, phone} | null, points_awarded, otp? }`. `status` is one of `requested | accepted | collected | cancelled`.
-- `PATCH /api/pickup/{id}/accept` → pickup.
-- `POST /api/pickup/{id}/verify` JSON `{ otp }` → `{ pickup_id, status, verified, points_awarded }`.
-- `GET /api/user/points` → `{ total_points, transactions: [{ id, pickup_id, points, description, created_at }] }`.
-- `GET /api/impact` → `{ completed_pickups, items_collected, category_breakdown: [{ category, count }], recent_activity: [pickup] }`.
-- Categories: `plastic, paper, glass, metal, e-waste, organic, hazardous, other`.
-
-Open points to raise with the backend owner:
-
-- **OTP exposure:** `otp` must only be returned to the owning citizen while status is `accepted`, never to collectors or admins. The UI only renders it in the citizen view, but the server must enforce this.
-- **Role scoping:** `GET /api/pickup` has no role/user parameter. The citizen, collector and admin views all call it. The backend needs to scope results by caller (or the contract needs a filter).
-- **Admin aggregates:** computed client-side from `GET /api/pickup`; no admin or recycler endpoint exists in the contract.
-- **Upload limits:** the frontend enforces JPG/PNG/WebP up to 5 MB. Align with the backend.
-- **Cancellation:** not in the API, so no cancel UI is shown.
+- `POST /api/waste/analyze` → multipart form with `file` and a response containing category, confidence, warning flags, disposal instructions, and estimated points.
+- `POST /api/pickup/request` → create a pickup request.
+- `PATCH /api/pickup/{id}/accept` → accept a pickup.
+- `POST /api/pickup/{id}/verify` → verify OTP and update status.
+- `GET /api/user/points` → return total points and recent transactions.
+- `GET /api/impact` → return completed pickups and impact metrics.
 
 ## Accessibility
 
-Semantic landmarks and skip link, labeled controls, `aria-invalid`/`role="alert"` on errors, status shown with icon + text (not color alone), visible focus rings, reduced-motion support, modal dialogs via native `<dialog>`.
+The app includes semantic layouts, labeled form fields, visible focus states, alerts for invalid input, and status messaging that does not rely on color alone.
