@@ -38,6 +38,28 @@ npm run dev
 
 This starts the app at http://localhost:5173 and points it to the local backend by default via `VITE_API_URL=http://localhost:8000`.
 
+## Production deployment (Render + AWS Amplify)
+
+The production frontend is `https://main.d1cxpw7q8iu6oo.amplifyapp.com`; its API is `https://ecocycle-backend-wl7u.onrender.com`.
+
+Configure the Render web service with the `backend` directory as its root, install dependencies with `pip install -r requirements.txt`, and use this start command:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Set these environment variables in the Render dashboard (do not upload or commit `backend/.env`):
+
+| Variable | Production value / guidance |
+| --- | --- |
+| `APP_ENV` | `production` |
+| `SECRET_KEY` | A unique, randomly generated secret; do not reuse the example value |
+| `FRONTEND_ORIGINS` | `https://main.d1cxpw7q8iu6oo.amplifyapp.com` (comma-separated exact origins if more are needed) |
+| `MOCK_CLASSIFIER` | Choose `true` for the mock classifier or `false` for the configured real classifier |
+| `DATABASE_URL` | Use a persistent production database; Render's local filesystem/SQLite storage is not suitable for durable production data |
+
+Set the frontend's `VITE_API_URL` and `VITE_USE_MOCK_DATA` in Amplify as described in [the frontend README](../frontend/README.md), then redeploy both services after changing their environment variables. Confirm the backend at `https://ecocycle-backend-wl7u.onrender.com/api/health`. A browser CORS preflight must return a successful response with `access-control-allow-origin` matching the Amplify origin.
+
 ## Run tests
 
 ```bash
@@ -47,13 +69,13 @@ pytest tests/ -v
 
 ## Environment variables
 
-The backend reads values from `backend/.env` created from `.env.example`.
+For local development, the backend reads values from `backend/.env`, created from `.env.example`. The table below describes the example values; the production service should receive its settings through the Render dashboard.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `DATABASE_URL` | `sqlite:///./EcoCycle.db` | Local dev database |
 | `APP_ENV` | `development` | App mode for local dev vs production |
-| `SECRET_KEY` | `change-me-in-production` | Secret used for app-level security |
+| `SECRET_KEY` | `change-me-in-production` | Example only; replace with a unique secret outside local development |
 | `FRONTEND_ORIGINS` | `http://localhost:5173,http://localhost:4173` | Allowed frontend origins for CORS |
 | `MOCK_CLASSIFIER` | `false` | `true` uses the local mock classifier; `false` enables the real classifier flow |
 | `AWS_ACCESS_KEY_ID` | empty | Optional AWS credential for Bedrock access |
@@ -107,7 +129,7 @@ The API layer depends on the stable `WasteAnalysisResponse` contract instead of 
 
 - OTPs are hashed before storage and never logged in plaintext.
 - Maximum OTP attempts are limited to reduce brute-force abuse.
-- `.env` should never be committed; it contains local secrets and credentials.
+- `.env` files should never be committed; they contain local configuration and may contain secrets. The repository `.gitignore` excludes them; commit `.env.example` templates instead. If a secret has been committed, rotate it.
 - This MVP uses demo-role flows rather than production auth. Add JWT or a proper identity provider before production deployment.
 
 ## API notes

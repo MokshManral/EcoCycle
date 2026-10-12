@@ -44,6 +44,24 @@ Copy `frontend/.env.example` to `.env` and adjust as needed.
 
 All `VITE_` variables are public in the browser bundle. Never store secrets in them.
 
+## Production deployment (AWS Amplify + Render)
+
+The deployed frontend is served by Amplify and calls the FastAPI backend on Render:
+
+- Frontend: https://main.d1cxpw7q8iu6oo.amplifyapp.com
+- Backend API: https://ecocycle-backend-wl7u.onrender.com
+
+Set these variables in **Amplify → App settings → Environment variables** for the branch being deployed:
+
+| Variable | Production value |
+| --- | --- |
+| `VITE_API_URL` | `https://ecocycle-backend-wl7u.onrender.com` |
+| `VITE_USE_MOCK_DATA` | `false` |
+
+The repository includes `frontend/amplify.yml`, which sets the Amplify app root to `frontend` and publishes the Vite `dist` directory. Vite embeds `VITE_` values into the JavaScript during the build, so save the Amplify variables and redeploy after changing them. Do not commit local `.env` files; the repo `.gitignore` ignores them. Commit `.env.example` templates only.
+
+The backend must allow the exact deployed frontend origin in its `FRONTEND_ORIGINS` setting; see [the backend README](../backend/README.md). To check connectivity, open `https://ecocycle-backend-wl7u.onrender.com/api/health`. If the browser console shows requests to `localhost:8000`, the deployed bundle was built without the production `VITE_API_URL`; if it reports a CORS error, check Render's `FRONTEND_ORIGINS` value.
+
 ## Demo accounts and roles
 
 The app ships with demo users for all three portal roles:
